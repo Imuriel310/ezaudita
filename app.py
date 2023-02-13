@@ -1,12 +1,30 @@
 from chalice import Chalice
+import services.unit_measure_service as unit_measure
+from chalice import Response
+# import requests
 
 app = Chalice(app_name='ezaudita')
+# from database import config
 
 
-@app.route('/')
-def index():
-    return {'hello': 'world'}
-
+@app.route(
+    '/unit_measure',
+    methods=['GET']
+)
+def get_unit_measure():
+    method = app.current_request.method
+    if method == 'GET':
+        params = app.current_request.query_params
+        response = unit_measure.get_unit_measure(params)
+    if method == 'POST':
+        body = None
+        response = unit_measure.create_unit_measure(body)
+    return Response(
+        body = response,
+        status_code=200,
+        headers={'Content-Type': 'application/json'}
+    )
+#
 
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
