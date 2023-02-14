@@ -1,6 +1,5 @@
 from jsonschema import validate
 from jsonschema import ValidationError
-from models.custom_exception import CustomException
 from chalice import BadRequestError
 
 def validate_request(request_json, model_json):
@@ -20,7 +19,9 @@ def return_param_error(e: ValidationError):
                 if type(p) == str:
                     param += f'{p}.'
             mensaje = f'request error {param} must be type {e.validator_value}'
-        if e.validator == 'required':
+        elif e.validator == 'required':
             param = e.message
             mensaje = f'Request error {param}'
+        else:
+            mensaje = f'{e.message}'
         return mensaje

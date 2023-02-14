@@ -1,8 +1,10 @@
 from chalice import Chalice
 import services.unit_measure_service as unit_measure
+import services.products_service as proudct
 from services.utils import validate_request
 from chalice import Response
 from chalice import BadRequestError
+from chalice import NotFoundError
 import models.request_schema as request_model
 import json
 # import requests
@@ -42,24 +44,37 @@ def get_unit_measure():
         status_code=status_code,
         headers={'Content-Type': 'application/json'}
     )
-#
-
-# The view function above will return {"hello": "world"}
-# whenever you make an HTTP GET request to '/'.
-#
-# Here are a few more examples:
-#
-# @app.route('/hello/{name}')
-# def hello_name(name):
-#    # '/hello/james' -> {"hello": "james"}
-#    return {'hello': name}
-#
-# @app.route('/users', methods=['POST'])
-# def create_user():
-#     # This is the JSON body the user sent in their POST request.
-#     user_as_json = app.current_request.json_body
-#     # We'll echo the json body back to the user in a 'user' key.
-#     return {'user': user_as_json}
-#
-# See the README documentation for more examples.
-#
+    
+@app.route(
+    '/product',
+    methods=['GET', 'POST', 'PUT', 'DELETE']
+)
+def product():
+    method = app.current_request.method
+    if method == 'GET':
+        params = app.current_request.query_params or {}
+        response, status_code = proudct.get_products(params)
+    if method == 'POST':
+        body = app.current_request.json_body
+        validate_request(body, request_model.create_product_model)
+        response, status_code = proudct.create_product(body)
+    if method == 'PUT':
+        params = app.current_request.query_params or {}
+        product_id = params.get('product_id')
+        # verify param
+        if product_id is None:
+            raise BadRequestError(
+                'param product_id requiered'
+            )
+        #verify body
+        body = app.current_request.json_body
+        validate_request(body, request_model.update_product_model)
+        response, status_code = proudct.update_product(body, product_id)
+    
+    if status_code == 404:
+        raise NotFoundError("no registrers found")
+    return Response(
+        body = response,
+        status_code=status_code,
+        headers={'Content-Type': 'application/json'}
+    )

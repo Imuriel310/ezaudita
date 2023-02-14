@@ -4,12 +4,12 @@ from database.config import SessionLocal
 from chalice import ChaliceViewError
 from chalice import NotFoundError
 
-def get_unit_measure_all(unit_measure_id:int = None) -> object:
+def get_unit_measure_all() -> dict:
     with SessionLocal() as session:
         unit_measure_data = session.query(UnitMeasure).all()
         return unit_measure_data
 
-def get_unit_measure_specific(unit_measure_id:int = None) -> object:
+def get_unit_measure_specific(unit_measure_id:int = None) -> dict:
     with SessionLocal() as session:
         unit_measure_data = session.query(UnitMeasure).filter(
             UnitMeasure.unit_measure_id==unit_measure_id

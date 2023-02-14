@@ -7,5 +7,5 @@ class UnitMeasure(Base):
     __tablename__ = "unit_measure"
     __table_args__ = {"schema": "ezaudita"}
     
-    unit_measure_id = Column(Integer, primary_key=True)
+    unit_measure_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
