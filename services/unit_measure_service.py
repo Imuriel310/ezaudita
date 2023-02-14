@@ -4,13 +4,16 @@ def get_unit_measure(params:object) ->list or object :
     unit_measure_id = params.get('unit_measure_id') if params else None
     if unit_measure_id is not None:
         # retrieve sepecific row by id
-        return get_unit_measure_by_id(unit_measure_id=int(unit_measure_id))
+        return get_unit_measure_by_id(unit_measure_id=int(unit_measure_id)), 200
     else:
         # retrieve all unit measure
-        return get_unit_measure_all()
+        return get_unit_measure_all(), 200
 
-def create_unit_measure(body:object) -> object:
-    pass
+def create_unit_measure(body:dict) -> dict:
+    return dao.save_unit_measure(body.get('name')), 201
+
+def update_unit_measure_name(body:dict, unit_measure_id:int) -> dict:
+    return dao.update_unit_measure(body.get('name'), int(unit_measure_id)), 200
     
         
 

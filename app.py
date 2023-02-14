@@ -1,6 +1,10 @@
 from chalice import Chalice
 import services.unit_measure_service as unit_measure
+from services.utils import validate_request
 from chalice import Response
+from chalice import BadRequestError
+import models.request_schema as request_model
+import json
 # import requests
 
 app = Chalice(app_name='ezaudita')
@@ -9,19 +13,33 @@ app = Chalice(app_name='ezaudita')
 
 @app.route(
     '/unit_measure',
-    methods=['GET']
+    methods=['GET', 'POST', 'PUT', 'DELETE']
 )
 def get_unit_measure():
     method = app.current_request.method
     if method == 'GET':
         params = app.current_request.query_params
-        response = unit_measure.get_unit_measure(params)
+        response, status_code = unit_measure.get_unit_measure(params)
     if method == 'POST':
-        body = None
-        response = unit_measure.create_unit_measure(body)
+        body = app.current_request.json_body
+        validate_request(body, request_model.unit_measure_model)
+        response, status_code = unit_measure.create_unit_measure(body)
+    if method == 'PUT':
+        params = app.current_request.query_params
+        unit_measure_id = params.get('unit_measure_id')
+        # verify param
+        if unit_measure_id is None:
+            raise BadRequestError(
+                'param unit_measure_id requiered'
+            )
+        #verify body
+        body = app.current_request.json_body
+        validate_request(body, request_model.unit_measure_model)
+        response, status_code = unit_measure.update_unit_measure_name(body, unit_measure_id)
+        
     return Response(
         body = response,
-        status_code=200,
+        status_code=status_code,
         headers={'Content-Type': 'application/json'}
     )
 #
