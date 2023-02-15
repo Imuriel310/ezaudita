@@ -51,3 +51,26 @@ update_product_model = {
     "minProperties": 1
     
 }
+
+create_sales_model = {
+    "type": "object",
+    "properties": {
+        "date": {
+            "type": "string"
+        },
+        "quantity": {
+            "type": "number"
+        },
+        "product_id": {
+            "type": "integer"
+        }
+    },
+    "required": [
+        "date",
+        "quantity",
+        "product_id"
+    ],
+    "additionalProperties": False,
+    "minProperties": 1
+    
+}
