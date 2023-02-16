@@ -1,0 +1,119 @@
+Ezaudita-test is an AWS-based web application built using the Python language and Chalice framework to provide API endpoints to perform CRUD operations on UnitMeasure and Product models. It also includes an API endpoint to generate sales.
+
+Prerequisites
+The following tools must be installed on your system to use this application:
+
+- Python 3.8 or higher
+- pip
+- Chalice framework
+- PostgreSQL
+- SQLAlchemy
+- Postman
+
+
+Setup
+- Clone the repository.
+
+- Install the required packages by running pip install -r requirements.txt.
+- Create a PostgreSQL database and update the database URL in the config.py file.
+Database query: 
+            create sequence unit_measure_id_seq
+            as integer;
+
+        alter sequence unit_measure_id_seq owner to postgres;
+
+        create sequence "Products_product_id_seq"
+            as integer;
+
+        alter sequence "Products_product_id_seq" owner to postgres;
+
+        create table unit_measure
+        (
+            unit_measure_id integer default nextval('ezaudita.unit_measure_id_seq'::regclass) not null
+                primary key,
+            name            varchar
+        );
+
+        alter table unit_measure
+            owner to postgres;
+
+        alter sequence unit_measure_id_seq owned by unit_measure.unit_measure_id;
+
+        create table products
+        (
+            product_id      integer default nextval('ezaudita."Products_product_id_seq"'::regclass) not null
+                constraint "Products_pkey"
+                    primary key
+                constraint "Products_product_id_key"
+                    unique,
+            name            varchar,
+            price           double precision,
+            unit_measure_id integer
+                constraint products_unit_measure__fk
+                    references unit_measure
+        );
+
+        alter table products
+            owner to postgres;
+
+        alter sequence "Products_product_id_seq" owned by products.product_id;
+
+        create table sales
+        (
+            sales_id   serial
+                primary key
+                unique,
+            date       date,
+            quantity   integer,
+            product_id integer
+                constraint sales_products_product_id_fk
+                    references products
+        );
+
+        alter table sales
+            owner to postgres;
+
+
+- Start the server by running chalice local.
+Endpoints
+UnitMeasure Endpoints
+GET /unit_measure
+Retrieve all unit measures.
+
+GET /unitmeasure?unit_measure_id=
+Retrieve a specific unit measure by ID.
+
+POST /unit_measure
+Create a new unit measure.
+
+PUT /unit_measure?unit_measure_id=
+Update an existing unit measure.
+
+DELETE /unit_measure?unit_measure_id=0
+Delete a unit measure.
+
+Product Endpoints
+GET /product
+Retrieve all products.
+
+GET /product?price=10  and or [name=?, product_id=, unit_measure_id=]
+Retrieve a specific product by ID.
+
+POST /product
+Create a new product.
+
+PUT /product/{product_id}
+Update an existing product.
+
+DELETE /product?product_id=12
+Delete a product.
+
+Sales Endpoint
+POST /sales
+Create a new sale.
+
+GET /sales_each
+Retrieve the sales of each product (quantity and amount).
+
+GET /sales_all
+Retrieve the sales of all products (quantity and amount).

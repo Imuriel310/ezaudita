@@ -39,6 +39,14 @@ def get_unit_measure():
         body = app.current_request.json_body
         validate_request(body, request_model.unit_measure_model)
         response, status_code = unit_measure.update_unit_measure_name(body, unit_measure_id)
+    if method == 'DELETE':
+        params = app.current_request.query_params
+        unit_measure_id = params.get('unit_measure_id')
+        if unit_measure_id is None:
+            raise BadRequestError(
+                "unit_measure_id param is requiered"
+            )
+        response, status_code = unit_measure.delete_unit_measure(unit_measure_id)
         
     return Response(
         body = response,
@@ -71,6 +79,14 @@ def product():
         body = app.current_request.json_body
         validate_request(body, request_model.update_product_model)
         response, status_code = proudct.update_product(body, product_id)
+    if method == 'DELETE':
+        params = app.current_request.query_params
+        product_id = params.get('product_id')
+        if product_id is None:
+            raise BadRequestError(
+                "product_id param is requiered"
+            )
+        response, status_code = proudct.delete_product(product_id)
     
     if status_code == 404:
         raise NotFoundError("No products found")
@@ -82,7 +98,7 @@ def product():
     
 @app.route(
     '/sales',
-    methods=['GET', 'POST']
+    methods=['GET', 'POST', 'DELETE']
 )
 def sales():
     method = app.current_request.method
@@ -93,6 +109,14 @@ def sales():
         body = app.current_request.json_body
         validate_request(body, request_model.create_sales_model)
         response, status_code = sale.create_sales(body)
+    if method == 'DELETE':
+        params = app.current_request.query_params
+        sale_id = params.get('sales_id')
+        if sale_id is None:
+            raise BadRequestError(
+                "sale_id param is requiered"
+            )
+        response, status_code = sale.delete_sale(sale_id)
     if status_code == 404:
         raise NotFoundError("no registrers found")
     return Response(
@@ -100,6 +124,7 @@ def sales():
         status_code=status_code,
         headers={'Content-Type': 'application/json'}
     )
+    
 
 @app.route('/sales_each', methods=['GET'])
 def sales_each_product():
