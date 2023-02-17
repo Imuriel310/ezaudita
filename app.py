@@ -18,7 +18,7 @@ app = Chalice(app_name='ezaudita')
     '/unit_measure',
     methods=['GET', 'POST', 'PUT', 'DELETE']
 )
-def get_unit_measure():
+def unit_measure_function():
     method = app.current_request.method
     if method == 'GET':
         params = app.current_request.query_params

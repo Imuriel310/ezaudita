@@ -53,6 +53,7 @@ def update_unit_measure(unit_measure_new_name: str, unit_measure_id: int) -> dic
             raise ChaliceViewError(
                 e
             )
+        return {'message': 'unit measured updated'}
 
 def delete_unit_measure(unit_measure_id:int):
     # Create a session to interact with the database.

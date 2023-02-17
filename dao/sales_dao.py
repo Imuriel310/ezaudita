@@ -44,6 +44,12 @@ def create_sales(sales_object: SalesModel) -> dict:
             session.add(new_sale)
             session.flush()
             session.commit()
+        
+        except sqlalchemy.exc.IntegrityError as e:
+            # if an integrity error occurs, raise a ChaliceViewError with a custom error message
+            raise ChaliceViewError(
+                f"Integrity error, product does not exist"
+            )
         except Exception as e:
             # if an error occurs, raise a ChaliceViewError with the error message
             raise ChaliceViewError(
@@ -110,6 +116,7 @@ def get_sales_each_product() -> list:
     with SessionLocal() as session:
         response = session.query(
             Products.name.label('product'), 
+            Products.product_id,
             # if None then 0
             UnitMeasure.name.label('unit_measure'),
             func.coalesce(
@@ -125,7 +132,9 @@ def get_sales_each_product() -> list:
             isouter = True
         ).join(
             UnitMeasure, UnitMeasure.unit_measure_id == Products.unit_measure_id
-        ).group_by(Products.product_id, UnitMeasure.name).all()
+        ).order_by(
+            Products.product_id
+        ).group_by(Products.product_id, UnitMeasure.name)
 
         return response
         

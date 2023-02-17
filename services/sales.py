@@ -50,6 +50,7 @@ def get_sales_each_product():
     # Convert each sales record into a SalesEach object and append to response list
     for sale in products_sales:
         response.append(SalesEach(
+                sale.product_id,
                 sale.product,
                 sale.unit_measure,
                 sale.quantity,
